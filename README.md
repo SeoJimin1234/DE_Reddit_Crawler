@@ -27,7 +27,7 @@ project/
 | 김형신 | 2023-01-01 ~ 2023-06-30 | |
 | 남재은 | 2023-07-01 ~ 2023-12-31 | |
 
-> **CSV 파일 합치기**: 각자 수집 완료 후 `wegovy_reddit.csv`, `mounjaro_reddit.csv` 파일을 취합 담당자에게 전달하면 됩니다. `document_id` 기준으로 중복 제거 후 합칩니다.
+> **CSV 파일 합치기**: 각자 수집 완료 후 `wegovy_reddit.csv`, `mounjaro_reddit.csv` 파일을 취합 담당자(서지민)에게 전달하면 됩니다. `document_id` 기준으로 중복 제거 후 합칩니다.
 
 ---
 
