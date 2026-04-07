@@ -1,41 +1,42 @@
 # Reddit 크롤러 사용 가이드
 
-위고비(Wegovy) / 마운자로(Mounjaro) 부작용 데이터 수집을 위한 Reddit JSON API 크롤러입니다.
+위고비(Wegovy) / 마운자로(Mounjaro) 부작용 데이터 수집을 위한 Reddit 크롤러입니다.
 
 ---
 
-## 📁 파일 구성
+## 📌 현재 수집 방식에 대해
 
-```
-project/
-├── reddit_crawler.py   # 수집 코드
-└── README.md
-```
+### 현재 수집 전략
+
+1,000개 제한을 우회하기 위해 **정렬 방식을 다각화**하여 수집합니다. 각 정렬은 서로 다른 게시글을 반환하므로, 중복 제거 후 더 많은 데이터를 확보할 수 있습니다.
+
+| 정렬 | 수집 내용 |
+|------|---------|
+| `new` | 최신 게시글 |
+| `hot` | 현재 화제 게시글 |
+| `top(all)` | 역대 인기 게시글 |
+| `top(year)` | 최근 1년 인기 게시글 |
+
+중복되는 `document_id`는 자동으로 스킵됩니다.
 
 ---
 
-## 👥 팀원별 수집 분담
+## 👥 역할 분담
 
-> 각자 담당 기간을 실행 시 입력하면 됩니다. 서브레딧은 코드가 자동으로 전체 수집합니다.
+| 이름 | 담당 서브레딧 |
+|------|-------------|
+| 김민영 | r/Wegovy (1번) |
+| 김서영 | r/WegovyWeightLoss (2번) |
+| 김형신 | r/Mounjaro (3번) |
+| 남재은 | 위 완료된 것 중 남은 것 보조 |
 
-| 이름 | 수집 기간 | 상태 |
-|------|----------|------|
-| 서지민 | 2025-01-01 ~ 2026-04-06 | 수집 중 |
-| 서지민 | 2024-01-01 ~ 2024-12-31 | 위 완료 후 추가 수집 |
-| 김민영 | 2022-05-01 ~ 2022-08-31 | |
-| 김서영 | 2022-09-01 ~ 2022-12-31 | |
-| 김형신 | 2023-01-01 ~ 2023-06-30 | |
-| 남재은 | 2023-07-01 ~ 2023-12-31 | |
-
-> **CSV 파일 합치기**: 각자 수집 완료 후 `wegovy_reddit.csv`, `mounjaro_reddit.csv` 파일을 취합 담당자(서지민)에게 전달하면 됩니다. `document_id` 기준으로 중복 제거 후 합칩니다.
+> 각자 담당 서브레딧 1개씩 실행하면 됩니다.
 
 ---
 
 ## ⚙️ 환경 설정
 
 ### 1. 레포지토리 클론
-
-터미널(Mac) 또는 명령 프롬프트/PowerShell(Windows)을 열고 아래 명령어를 실행합니다.
 
 ```bash
 git clone https://github.com/SeoJimin1234/DE_Reddit_Crawler.git
@@ -46,11 +47,11 @@ cd DE_Reddit_Crawler
 
 ### 2. VSCode 설치 및 열기
 
-[VSCode 다운로드](https://code.visualstudio.com/) 후 프로젝트 폴더를 열어주세요.
+[VSCode 다운로드](https://code.visualstudio.com/) 후 클론한 폴더를 열어주세요.
 
 VSCode 상단 메뉴 → `Terminal` → `New Terminal` 로 터미널을 열 수 있습니다.
 
-### 2. Python 버전 확인
+### 3. Python 버전 확인
 
 Python **3.9 이상** 필요합니다.
 
@@ -67,7 +68,7 @@ python --version
 > Python이 없다면 [python.org](https://www.python.org/downloads/) 에서 설치하세요.
 > Windows 설치 시 **"Add Python to PATH"** 체크박스를 반드시 선택해야 합니다.
 
-### 3. 가상환경 생성 및 활성화
+### 4. 가상환경 생성 및 활성화
 
 **Mac**
 ```bash
@@ -83,12 +84,12 @@ python -m venv .venv
 
 > 활성화 후 터미널 앞에 `(.venv)` 가 표시되면 정상입니다.
 
-> **Windows 오류 대응**: 활성화 시 `cannot be loaded because running scripts is disabled` 오류가 나면 아래 명령어 실행 후 다시 시도하세요.
+> **Windows 오류 대응**: `cannot be loaded because running scripts is disabled` 오류가 나면 아래 명령어 실행 후 다시 시도하세요.
 > ```bash
 > Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 > ```
 
-### 4. 라이브러리 설치
+### 5. 라이브러리 설치
 
 ```bash
 pip install requests
@@ -108,66 +109,56 @@ python3 reddit_crawler.py
 python reddit_crawler.py
 ```
 
-실행하면 기존 CSV가 있을 경우 자동으로 감지해 이어서 수집할지 물어봅니다.
+실행하면 수집할 서브레딧을 선택합니다.
 
 ```
-🔍 기존 수집 데이터 감지!
-   마지막으로 저장된 데이터: 2025-08-15 까지
-   → 시작일을 2025-08-15 로 자동 설정할 수 있습니다.
+📌 수집할 서브레딧 선택
+  1. r/Wegovy              →  wegovy_reddit.csv
+  2. r/WegovyWeightLoss    →  wegovyweightloss_reddit.csv
+  3. r/Mounjaro            →  mounjaro_reddit.csv
 
-이어서 수집할까요? (y/n):
+번호 입력 (1/2/3):
 ```
 
-처음 실행이거나 새 기간을 수집할 경우 날짜를 직접 입력합니다.
+담당 번호를 입력하고 Enter를 누르면 `top(all) → top(year) → hot → new` 순서로 자동 수집이 시작됩니다.
 
-```
-시작일 입력 (YYYY-MM-DD): 2025-01-01
-종료일 입력 (YYYY-MM-DD): 2026-04-06
-```
+---
 
-Enter를 누르면 수집이 시작됩니다.
-
-### 수집 완료 시 생성되는 파일
+## 수집 완료 시 생성되는 파일
 
 ```
 project/
 ├── reddit_crawler.py
 ├── README.md
-├── wegovy_reddit.csv       # r/Wegovy + r/WegovyWeightLoss 수집 결과
-└── mounjaro_reddit.csv     # r/Mounjaro 수집 결과
+├── wegovy_reddit.csv             # r/Wegovy 수집 결과
+├── wegovyweightloss_reddit.csv   # r/WegovyWeightLoss 수집 결과
+└── mounjaro_reddit.csv           # r/Mounjaro 수집 결과
 ```
 
 각 CSV는 실행할 때마다 **기존 파일에 이어서 저장**됩니다. 덮어쓰지 않으므로 안심하고 재실행해도 됩니다.
 
 ---
 
-## 💾 자동 저장 및 휴식
+## 💾 자동 저장
 
-**800행마다 자동으로 CSV에 저장 후 10~15분 휴식**합니다.
-중간에 프로그램이 꺼져도 저장된 데이터는 유지됩니다.
+**800행마다 자동으로 CSV에 저장**합니다.
+중간에 프로그램이 꺼져도 저장된 데이터는 유지되며, 재실행 시 이어서 수집합니다.
 
 ```
 💾 중간 저장 완료
    - 이번 실행 누적: 800행
    - 현재까지 수집된 데이터: 2025-03-12 까지
-⏸️  12분 휴식 후 재개...
-▶️  수집 재개
 ```
 
 ---
 
 ## 🔄 중단 후 재실행
 
-컴퓨터가 꺼지거나 예기치 않게 중단됐을 때 **그냥 다시 실행**하면 됩니다.
-
-재실행 시 기존 CSV를 자동으로 읽어 마지막으로 저장된 날짜를 감지하고, 거기서부터 이어서 수집합니다. 이미 수집된 데이터는 자동으로 스킵되므로 중복이 생기지 않습니다.
+중간에 끊겼을 때 **그냥 다시 실행**하면 됩니다.
+기존 CSV의 `document_id`를 자동으로 읽어 이미 수집된 데이터는 스킵합니다.
 
 ```
-🔍 기존 수집 데이터 감지!
-   마지막으로 저장된 데이터: 2025-08-15 까지
-
-이어서 수집할까요? (y/n): y
-✅ 시작일 자동 설정: 2025-08-15
+📂 기존 수집 1600건 로드 (중복 스킵)
 ```
 
 ---
@@ -176,20 +167,21 @@ project/
 
 | 메시지 | 의미 |
 |--------|------|
-| `🔍 기존 수집 데이터 감지!` | 기존 CSV 발견, 마지막 저장 날짜 표시 |
-| `이어서 수집할까요? (y/n)` | y: 마지막 날짜부터 자동 시작 / n: 날짜 직접 입력 |
+| `📌 수집할 서브레딧 선택` | 번호 입력 대기 중 |
 | `▶️  Enter를 누르면 수집을 시작합니다` | Enter 누르면 수집 시작 |
-| `📂 기존 수집 N건 로드 (중복 스킵)` | 이전 수집 데이터 불러옴, 중복 자동 방지 |
-| `[WEGOVY] r/Wegovy (날짜 ~ 날짜)` | 해당 서브레딧 수집 시작 |
-| `정렬: new` | 최신순으로 게시글 수집 중 |
-| `정렬: top` | 인기순으로 게시글 수집 중 |
-| `→ 기간 이전 게시글 도달, 중단` | 시작일보다 오래된 글 도달 → 자동 중단 (정상) |
-| `⚠️  [Rate limit] 60초 대기 후 재시도` | Reddit 요청 차단 → 60초 후 자동 재시도 (정상) |
+| `📂 기존 수집 N건 로드 (중복 스킵)` | 기존 데이터 불러옴, 중복 자동 방지 |
+| `📂 정렬: new` | new 정렬 수집 시작 |
+| `📂 정렬: hot` | hot 정렬 수집 시작 |
+| `📂 정렬: top(all)` | top(all) 정렬 수집 시작 |
+| `📂 정렬: top(year)` | top(year) 정렬 수집 시작 |
+| `페이지 N 요청 중...` | N번째 페이지 수집 중 (정상) |
+| `→ N 마지막 페이지 도달` | 해당 정렬 수집 완료 |
+| `✅ N 완료: N행 추가` | 해당 정렬 완료 및 추가 수집량 |
+| `⚠️  [Rate limit] 5분 대기 후 재시도` | Reddit 요청 차단 → 5분 후 자동 재시도 (정상) |
+| `[오류] HTTP 403` | Reddit IP 차단 → 다른 와이파이로 변경 후 재실행 |
 | `💾 중간 저장 완료` | 800행 모여서 CSV에 저장됨 |
 | `현재까지 수집된 데이터: YYYY-MM-DD 까지` | 저장된 데이터 중 가장 오래된 날짜 |
-| `⏸️  N분 휴식 후 재개` | rate limit 방지를 위한 자동 휴식 중 |
-| `▶️  수집 재개` | 휴식 끝, 수집 다시 시작 |
-| `🎉 수집 완료!` | 담당 기간 전체 수집 완료 |
+| `🎉 수집 완료!` | 전체 수집 완료 |
 
 ---
 
@@ -216,20 +208,12 @@ project/
 
 ---
 
-## ❗ 주의사항
-
-- `DELAY = 2.0` 이하로 낮추면 rate limit이 자주 걸릴 수 있습니다
-- 추후 Reddit 앱이 승인되면 PRAW로 교체 시 수집 속도가 4~6배 향상됩니다
-
----
-
 ## 🐛 자주 발생하는 오류
 
 | 오류 | 원인 | 해결 |
 |------|------|------|
-| `[Rate limit] 60초 대기` | 요청 과다 | 자동 재시도, 기다리면 됨 |
-| `게시글 0개 수집됨` | 서브레딧 이름 오타 | 대소문자 확인 |
-| `HTTP 403` | Reddit 접근 차단 | 잠시 후 재실행 |
+| `[Rate limit] 5분 대기` | 요청 과다 | 자동 재시도, 기다리면 됨 |
+| `[오류] HTTP 403` | Reddit IP 차단 | 다른 와이파이로 변경 후 재실행 |
 | `ModuleNotFoundError: requests` | 라이브러리 미설치 | `pip install requests` |
 | `cannot be loaded because running scripts is disabled` | Windows 보안 정책 | `Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser` 실행 |
 | `python3: command not found` (Windows) | python3 명령어 미지원 | `python` 으로 대체 |

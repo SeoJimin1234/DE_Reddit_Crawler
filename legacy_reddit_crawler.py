@@ -31,10 +31,10 @@ SAVE_EVERY     = 800
 
 # 수집할 정렬 방식 (순서대로 실행, 중복은 document_id로 자동 제거)
 SORT_TYPES = [
-    ("top",  "all"),      # 역대 인기 (가장 중요)
-    ("top",  "year"),     # 최근 1년 인기
-    ("hot",  None),       # 현재 화제
     ("new",  None),       # 최신순
+    ("hot",  None),       # 현재 화제
+    ("top",  "all"),      # 역대 인기
+    ("top",  "year"),     # 최근 1년 인기
 ]
 
 USER_AGENTS = [
@@ -329,7 +329,7 @@ def crawl_one_sort(
 def crawl_all_sorts(subreddit: str, drug_type: str, filepath: str, existing_ids: set) -> int:
     print(f"\n{'='*50}")
     print(f"[{drug_type.upper()}] r/{subreddit}")
-    print(f"  정렬 순서: top(all) → top(year) → hot → new")
+    print(f"  정렬 순서: new → hot → top(all) → top(year)")
     print(f"  기존 수집 데이터와 중복되는 항목은 자동 스킵")
 
     grand_total = 0
